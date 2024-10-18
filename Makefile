@@ -1,15 +1,18 @@
+# Compiler and Flags
 CC = gcc
 CFLAGS = -Wall -g -DGLEW_STATIC -DGLFW_INCLUDE_NONE
 
+# Directories
 SRC_DIR = src
 BUILD_DIR = build
 RES_DIR = res
 
-
+# Source Files
 SOURCES = $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/**/*.c) $(wildcard $(SRC_DIR)/**/**/*.c)
 HEADERS = $(wildcard $(SRC_DIR)/*.h) $(wildcard $(SRC_DIR)/**/*.h) $(wildcard $(SRC_DIR)/**/**/*.h)
 OBJECTS = $(patsubst $(SRC_DIR)/%.c, $(BUILD_DIR)/%.o, $(SOURCES))
 
+# OS Detection
 ifeq ($(OS),Windows_NT)
     OS = windows
     TARGET_EXEC = $(BUILD_DIR)/chess.exe
@@ -32,21 +35,24 @@ else
     endif
 endif
 
+# Ensure directories exist
 dir_guard=@mkdir -p $(@D)
 
-
+# Default Target
 .PHONY: all clean
 
 all: $(TARGET_EXEC)
 
+# Link Object Files into Executable
 $(TARGET_EXEC): $(OBJECTS)
 	$(dir_guard)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(LIB)
 
+# Compile Source Files into Object Files
 $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c $(HEADERS)
 	$(dir_guard)
 	$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-
+# Clean Build Directory
 clean:
 	rm -rf $(BUILD_DIR)
