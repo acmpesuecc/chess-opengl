@@ -56,3 +56,32 @@ $(BUILD_DIR)/%.o : $(SRC_DIR)/%.c $(HEADERS)
 # Clean Build Directory
 clean:
 	rm -rf $(BUILD_DIR)
+
+ifeq ($(OS),Windows_NT)
+    OS = windows
+    CXXFLAGS += -I/path/to/windows/headers
+    LDFLAGS += -L/path/to/windows/libs -lwin_specific_lib
+else
+    UNAME := $(shell uname -s)
+    ifeq ($(UNAME),Darwin)
+        OS = macos
+        CXXFLAGS += -I/path/to/macos/headers
+        LDFLAGS += -L/path/to/macos/libs -lGLU -lGL -lm
+    else ifeq ($(UNAME),Linux)
+        OS = linux
+        CXXFLAGS += -I/path/to/linux/headers
+        LDFLAGS += -L/path/to/linux/libs -lGLU -lGL -lm
+    else
+        $(error OS not supported by this Makefile)
+    endif
+endif
+
+# Common rules and targets
+all: main.o
+    $(CXX) $(CXXFLAGS) -o myprogram main.o $(LDFLAGS)
+
+main.o: main.cpp
+    $(CXX) $(CXXFLAGS) -c main.cpp
+
+clean:
+    rm -f *.o myprogram
