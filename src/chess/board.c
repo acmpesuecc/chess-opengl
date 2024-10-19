@@ -9,6 +9,8 @@
 
 static void update_castling_rights(ChessBoard *self, ChessColor color, CastlingRightsRemoved removed_rights,
                                    bool restore_rights);
+static void parse_castling_rights(ChessBoard *self, const char *fen_castling);
+static void parse_turn(ChessBoard *self, const char *fen_turn);
 
 void chess_board_init(ChessBoard *self)
 {
