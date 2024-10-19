@@ -25,6 +25,7 @@ typedef struct
 
     Vec2i white_king_pos;
     Vec2i black_king_pos;
+    ChessColor turn;
 } ChessBoard;
 
 void chess_board_init(ChessBoard *self);
@@ -32,6 +33,7 @@ void chess_board_make_move(ChessBoard *self, ChessPiece *piece, struct ChessMove
 void chess_board_promote_pawn(ChessBoard *self, ChessPiece *pawn, struct ChessMove *move,
                               PieceType promoted_type);
 void chess_board_undo_last_move(ChessBoard *self, struct ChessMove *prev_last_move);
+void chess_board_from_fen(ChessBoard *self, const char *fen);
 bool chess_board_is_square_attacked(ChessBoard *self, Vec2i square, ChessColor color);
 bool chess_board_does_side_have_legal_moves(ChessBoard *self, ChessColor color);
 bool chess_board_is_in_check(ChessBoard *self, ChessColor color);
