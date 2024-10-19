@@ -1,5 +1,7 @@
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <ctype.h>
 
 #include "../types.h"
 #include "board.h"
@@ -280,31 +282,6 @@ bool chess_board_is_in_stalemate(ChessBoard *self, ChessColor color, bool do_che
     return !chess_board_does_side_have_legal_moves(self, color);
 }
 
-static void update_castling_rights(ChessBoard *self, ChessColor color, CastlingRightsRemoved removed_rights,
-                                   bool restore_rights)
-{
-    bool new_state = restore_rights ? 1 : 0;
-
-    if (removed_rights == CASTLING_RIGHT_KINGSIDE)
-    {
-        color == WHITE ? (self->castling_rights.white_king_side = new_state)
-                       : (self->castling_rights.black_king_side = new_state);
-    }
-    else if (removed_rights == CASTLING_RIGHT_QUEENSIDE)
-    {
-        color == WHITE ? (self->castling_rights.white_queen_side = new_state)
-                       : (self->castling_rights.black_queen_side = new_state);
-    }
-    else if (removed_rights == CASTLING_RIGHT_BOTH)
-    {
-        color == WHITE ? (self->castling_rights.white_king_side = new_state,
-                          self->castling_rights.white_queen_side = new_state)
-                       : (self->castling_rights.black_king_side = new_state,
-                          self->castling_rights.black_queen_side = new_state);
-    }
-}
-
-
 //Initializing board from a FEN string.
 void chess_board_from_fen(ChessBoard *self, const char *fen)
 {
@@ -377,4 +354,29 @@ void chess_board_from_fen(ChessBoard *self, const char *fen)
                 case 'q': self->castling_rights.black_queen_side = 1; break;
             }
         }
+
+      
+    static void update_castling_rights(ChessBoard *self, ChessColor color, CastlingRightsRemoved removed_rights,
+                                       bool restore_rights)
+    {
+        bool new_state = restore_rights ? 1 : 0;
+    
+        if (removed_rights == CASTLING_RIGHT_KINGSIDE)
+        {
+            color == WHITE ? (self->castling_rights.white_king_side = new_state)
+                           : (self->castling_rights.black_king_side = new_state);
+        }
+        else if (removed_rights == CASTLING_RIGHT_QUEENSIDE)
+        {
+            color == WHITE ? (self->castling_rights.white_queen_side = new_state)
+                           : (self->castling_rights.black_queen_side = new_state);
+        }
+        else if (removed_rights == CASTLING_RIGHT_BOTH)
+        {
+            color == WHITE ? (self->castling_rights.white_king_side = new_state,
+                              self->castling_rights.white_queen_side = new_state)
+                           : (self->castling_rights.black_king_side = new_state,
+                              self->castling_rights.black_queen_side = new_state);
+        }
+    }
 }
