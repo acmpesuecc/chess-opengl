@@ -303,3 +303,78 @@ static void update_castling_rights(ChessBoard *self, ChessColor color, CastlingR
                           self->castling_rights.black_queen_side = new_state);
     }
 }
+
+
+//Initializing board from a FEN string.
+void chess_board_from_fen(ChessBoard *self, const char *fen)
+{
+    //To initialize the board to empty
+     for (int i = 0; i < 8; i++) 
+        for (int j = 0; j < 8; j++) 
+            self->squares[i][j] = NULL;
+
+    // Split the FEN string into relevant parts (board, turn, castling rights)
+    char board_part[100], turn_part[10], castling_part[10], en_passant_part[10], halfmove_clock[10], fullmove_number[10];
+    sscanf(fen, "%s %s %s %s %s %s", board_part, turn_part, castling_part, en_passant_part, halfmove_clock, fullmove_number);
+
+    // Parse board part of FEN
+    int row = 7, col = 0;
+    for (const char *c = board_part; *c != '\0'; c++) {
+        if (*c == '/') {
+            row--;
+            col = 0;
+        } else if (isdigit(*c)) {
+            col += *c - '0';
+        } else {
+            ChessColor color = isupper(*c) ? WHITE : BLACK;
+            char piece = tolower(*c);
+            PieceType type;
+
+            switch (piece) {
+                case 'p': type = PIECE_PAWN; break;
+                case 'r': type = PIECE_ROOK; break;
+                case 'n': type = PIECE_KNIGHT; break;
+                case 'b': type = PIECE_BISHOP; break;
+                case 'q': type = PIECE_QUEEN; break;
+                case 'k': type = PIECE_KING; 
+                    if (color == WHITE) {
+                        self->white_king_pos = (Vec2i){col, row};
+                    } else {
+                        self->black_king_pos = (Vec2i){col, row};
+                    }
+                    break;
+            }
+            self->squares[col][row] = chess_piece_new(type, color);
+            col++;
+        }
+    }
+
+    // Parse turn
+    parse_turn(self, turn_part);
+
+    // Parse castling rights
+    parse_castling_rights(self, castling_part);
+}
+
+    // Parse the active color (turn)
+    static void parse_turn(ChessBoard *self, const char *fen_turn) {
+        if (fen_turn[0] == 'w') {
+            self->turn = WHITE;
+        } else {
+            self->turn = BLACK;
+        }
+    }
+
+    // Parse castling rights
+    static void parse_castling_rights(ChessBoard *self, const char *fen_castling) {
+        self->castling_rights = (CastlingRights){0, 0, 0, 0}; // Initialize to no castling
+
+        for (const char *c = fen_castling; *c != '\0'; c++) {
+            switch (*c) {
+                case 'K': self->castling_rights.white_king_side = 1; break;
+                case 'Q': self->castling_rights.white_queen_side = 1; break;
+                case 'k': self->castling_rights.black_king_side = 1; break;
+                case 'q': self->castling_rights.black_queen_side = 1; break;
+            }
+        }
+}
