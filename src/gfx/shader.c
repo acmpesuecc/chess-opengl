@@ -42,10 +42,19 @@ static GLuint compile_shader(char *source, GLuint type)
 
     if (result == GL_FALSE)
     {
+#define MAX_MESSAGE_LENGTH 500
+
         GLint length;
         GL_CALL(glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length));
 
-        char message[length];
+        char message[MAX_MESSAGE_LENGTH];
+
+        if (length > MAX_MESSAGE_LENGTH)
+        {
+            printf("ERROR: GL_INFO_LOG_LENGTH > %d", MAX_MESSAGE_LENGTH);
+            exit(-1);
+        }
+
         GL_CALL(glGetShaderInfoLog(id, length, &length, message));
 
         printf("Failed to compile %s shader: %s\n", type == GL_VERTEX_SHADER ? "vertex" : "fragment", message);
