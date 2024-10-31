@@ -3,7 +3,7 @@
 #include "gfx/renderer.h"
 
 int main()
-{   
+{
     Window w;
     window_init(&w, 840, 800, "Chess");
 

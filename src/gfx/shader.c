@@ -42,6 +42,8 @@ static GLuint compile_shader(char *source, GLuint type)
 
     if (result == GL_FALSE)
     {
+#ifdef _MSC_VER
+
 #define MAX_MESSAGE_LENGTH 500
 
         GLint length;
@@ -54,6 +56,9 @@ static GLuint compile_shader(char *source, GLuint type)
             printf("ERROR: GL_INFO_LOG_LENGTH > %d", MAX_MESSAGE_LENGTH);
             exit(-1);
         }
+#else
+        char message[length];
+#endif
 
         GL_CALL(glGetShaderInfoLog(id, length, &length, message));
 
