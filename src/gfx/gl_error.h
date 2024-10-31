@@ -4,12 +4,22 @@
 #include <stdbool.h>
 
 // x86 only
+#ifdef _MSC_VER
+#define ASSERT_BREAKPOINT(x) \
+    if (!(x))                \
+    {                        \
+        printf("Unsupported breakpoint asm in msc, exiting GL error");\
+        exit(-1);\
+    }
+#else
+
 #define ASSERT_BREAKPOINT(x) \
     if (!(x))                \
     {                        \
         asm("int $3");       \
         asm("nop");          \
     }
+#endif
 
 #define GL_CALL(x)   \
     glClearError(); \
